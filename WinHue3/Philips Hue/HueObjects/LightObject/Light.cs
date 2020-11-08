@@ -157,11 +157,26 @@ namespace WinHue3.Philips_Hue.HueObjects.LightObject
         private ImageSource GetImageForLight(string modelid = null, string archetype = null)
         {
             string modelID = modelid ?? "DefaultHUE";
+            string stateSTR = string.Empty;
+
+
+            if (state.reachable.GetValueOrDefault() == false)
+            {
+                stateSTR = "unr";
+            }
+            else if (state.on.GetValueOrDefault() == true)
+            {
+                stateSTR = "on";
+            }
+            else
+            {
+                stateSTR = "off";
+            }
 
             if (modelID == string.Empty)
             {
                 log.Debug("STATE : " + state + " empty MODELID using default images");
-                return LightImageLibrary.Images["DefaultHUE"][state.on.GetValueOrDefault()];
+                return LightImageLibrary.Images["DefaultHUE"][stateSTR];
             }
 
             ImageSource newImage;
@@ -169,18 +184,18 @@ namespace WinHue3.Philips_Hue.HueObjects.LightObject
             if (LightImageLibrary.Images.ContainsKey(modelID)) // Check model ID first
             {
                 log.Debug("STATE : " + state + " MODELID : " + modelID);
-                newImage = LightImageLibrary.Images[modelID][state.on.GetValueOrDefault()];
+                newImage = LightImageLibrary.Images[modelID][stateSTR];
 
             }
             else if (archetype != null && LightImageLibrary.Images.ContainsKey(archetype)) // Check archetype after model ID, giving model ID priority
             {
                 log.Debug("STATE : " + state + " ARCHETYPE : " + archetype);
-                newImage = LightImageLibrary.Images[archetype][state.on.GetValueOrDefault()];
+                newImage = LightImageLibrary.Images[archetype][stateSTR];
             }
             else // Neither model ID or archetype are known
             {
                 log.Debug("STATE : " + state + " unknown MODELID : " + modelID + " and ARCHETYPE : " + archetype + " using default images.");
-                newImage = LightImageLibrary.Images["DefaultHUE"][state.on.GetValueOrDefault()];
+                newImage = LightImageLibrary.Images["DefaultHUE"][stateSTR];
             }
             return newImage;
         }
